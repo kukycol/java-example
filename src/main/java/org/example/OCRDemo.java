@@ -17,7 +17,8 @@ public class OCRDemo {
     public static void main(String[] args) throws IOException {
 
 
-        String sourceImagePath = "D:\\PlateDetect\\1d302edf48c64901b3990e2913a8a52d.jpg";
+        String sourceImagePath = "src/main/resources/jpg/demo.png";
+        String waterImagePath = "src/main/resources/jpg/water.jpg";
         String mirImagePath = "aa.jpg";
         /*图片翻转，type=1镜像翻转，type=0水平翻转*/
 //        ImageUtil.overturn(sourceImagePath,mirImagePath,0);
@@ -29,8 +30,15 @@ public class OCRDemo {
 //        ImageUtil.tailor(new TailorBean(0,0,300,300,sourceImagePath,mirImagePath));
 
         /*图片圆形裁剪*/
-        ImageUtil.circleTailor(new TailorBean(80,80,200,sourceImagePath,mirImagePath));
+//        ImageUtil.circleTailor(new TailorBean(80,80,200,sourceImagePath,mirImagePath));
 
+        /*图片文字水印*/
+        //单个文字
+//        ImageUtil.watermark(new WatermarkBean(-89,7000,new Color(44,255, 79),"宋体",0,90,"水印",sourceImagePath,mirImagePath));
+        //循环
+//        ImageUtil.watermark(new WatermarkBean(true,60,60,0,0,new Color(44,255, 79),"宋体",0,60,"水印",sourceImagePath,mirImagePath));
 
+        /*图片图片水印*/
+//        ImageUtil.imageWatermark(new WatermarkBean(500,1000,sourceImagePath,mirImagePath,waterImagePath));
     }
 }

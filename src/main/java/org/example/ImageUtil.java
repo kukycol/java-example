@@ -153,16 +153,16 @@ public class ImageUtil {
             int a = image.getWidth() - 1 - xCoordinate;
             if (a > xCoordinate) {
                 radius = xCoordinate;
-            }else {
+            } else {
                 radius = a;
             }
         }
         //判断圆心上下半径是否超限
-        if ((yCoordinate + radius) > image.getHeight() || radius >yCoordinate) {
+        if ((yCoordinate + radius) > image.getHeight() || radius > yCoordinate) {
             int a = image.getHeight() - 1 - yCoordinate;
             if (a > yCoordinate) {
                 radius = yCoordinate;
-            }else {
+            } else {
                 radius = a;
             }
         }
@@ -239,6 +239,117 @@ public class ImageUtil {
     }
 
 
+    /**
+     * 添加文字水印
+     *
+     * @param a 水印bean
+     */
+    public static void watermark(WatermarkBean a) {
+        BufferedImage image = null;
+        try {
+            image = ImageIO.read(new File(a.getSourceImagePath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
+        int height = image.getHeight();
+        int width = image.getWidth();
+
+        //定位不能超出边框
+        if ((a.getxCoordinate() + a.getFontSize() * a.getPressText().length()) >= width) {
+            a.setxCoordinate(width - a.getFontSize() * a.getPressText().length());
+        }
+        if ((a.getyCoordinate() + a.getFontSize()) >= height) {
+            a.setyCoordinate(height - 10);
+        }
+        if (a.getyCoordinate() <= 0) {
+            a.setyCoordinate(a.getFontSize());
+        }
+        if (a.getxCoordinate() < 0) {
+            a.setxCoordinate(0);
+        }
+
+        Graphics2D graphics = image.createGraphics();
+        graphics.drawImage(image, 0, 0, width, height, null);
+        graphics.setColor(a.getColor());
+        graphics.setFont(new Font(a.getFontName(), a.getFontStyle(), a.getFontSize()));
+        if (a.isCirculation()) {
+            a.setxCoordinate(0);
+            a.setyCoordinate(a.getFontSize());
+            int x = (width / (a.getxCoordinate() + a.getFontSize() * a.getPressText().length() + a.getXiInterval())) + 1;
+            int y = (height / (a.getyCoordinate() + a.getFontSize())) + 1;
+            for (int i = 0; i < x; i++) {
+                for (int j = 0; j <= y; j++) {
+                    int xc = i > 0 ? (a.getxCoordinate() + (i * (a.getFontSize() * a.getPressText().length() + a.getXiInterval()))) : a.getxCoordinate();
+                    int yc = j > 0 ? (a.getyCoordinate() + (j * (a.getyCoordinate() + a.getYiInterval()))) : a.getyCoordinate();
+                    graphics.drawString(a.getPressText(), xc, yc);
+                }
+            }
+        } else {
+            graphics.drawString(a.getPressText(), a.getxCoordinate(), a.getyCoordinate());
+        }
+        graphics.dispose();
+
+
+        try {
+            String imageType = a.getSourceImagePath().split("\\.")[1].toUpperCase();
+            ImageIO.write(image, imageType, new File(a.getMirImagePath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * 添加图片水印
+     * @param a 水印bean
+     */
+    public static void imageWatermark(WatermarkBean a){
+        BufferedImage image = null;
+        try {
+            image = ImageIO.read(new File(a.getSourceImagePath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        int height = image.getHeight();
+        int width = image.getWidth();
+
+        Graphics2D graphics = image.createGraphics();
+        graphics.drawImage(image, 0, 0, width, height, null);
+
+
+        BufferedImage waterImage = null;
+        try {
+            waterImage = ImageIO.read(new File(a.getWaterImagePath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if ((a.getxCoordinate() + waterImage.getWidth()) >= width) {
+            a.setxCoordinate(width - waterImage.getWidth());
+        }
+        if ((a.getyCoordinate() + waterImage.getHeight()) >= height) {
+            a.setyCoordinate(height - waterImage.getHeight());
+        }
+
+        if (a.getyCoordinate() < 0) {
+            a.setyCoordinate(0);
+        }
+        if (a.getxCoordinate() < 0) {
+            a.setxCoordinate(0);
+        }
+
+        graphics.drawImage(waterImage,a.getxCoordinate(),a.getyCoordinate(),waterImage.getWidth(),waterImage.getHeight(),null);
+        graphics.dispose();
+
+
+        try {
+            String imageType = a.getSourceImagePath().split("\\.")[1].toUpperCase();
+            ImageIO.write(image, imageType, new File(a.getMirImagePath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
